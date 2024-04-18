@@ -33,6 +33,10 @@ INSTALLED_APPS = [
     'rest_framework',
 ]
 
+REST_FRAMEWORK = {
+    'NON_FIELD_ERRORS_KEY': 'errors'
+}
+
 AUTH_USER_MODEL = 'authentication.User'
 
 MIDDLEWARE = [
