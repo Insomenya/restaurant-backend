@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from . import serializers
 from .models import Order
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
     
@@ -36,12 +37,33 @@ class OrderCreateListView(generics.GenericAPIView):
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class OrderDetailView(generics.GenericAPIView):
+    serializer_class = serializers.OrderDetailSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, order_id):
-        pass
+        order = get_object_or_404(Order, pk=order_id)
 
-    def post(self, request, order_id):
-        pass
+        serializer = self.serializer_class(instance=order)
+
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, order_id):
+        data = request.data
+
+        order = get_object_or_404(Order, pk=order_id)
+
+        serializer = self.serializer_class(data=data, instance=order)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, order_id):
-        pass
+        order = get_object_or_404(Order, pk=order_id)
+
+        order.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
