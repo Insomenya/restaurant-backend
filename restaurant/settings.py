@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication.apps.AuthenticationConfig',
     'orders.apps.OrdersConfig',
+    'menu.apps.MenuConfig',
 
     #third party
     'rest_framework',
@@ -128,7 +129,9 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Samara'
+
+DATE_INPUT_FORMATS = ['%d-%m-%Y']
 
 USE_L10N = True
 USE_i18N = True
@@ -140,6 +143,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = BASE_DIR /''
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

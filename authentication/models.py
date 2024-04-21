@@ -34,9 +34,9 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class User(AbstractUser):
-    username=models.CharField(max_length=25, unique=True)
-    email=models.CharField(max_length=80, unique=True)
-    phone_number=PhoneNumberField(null=False, unique=True)
+    username=models.CharField("Имя пользователя", max_length=25, unique=True)
+    email=models.CharField("Почта", max_length=80, unique=True)
+    phone_number=PhoneNumberField("Номер телефона", null=False, unique=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'phone_number']
@@ -44,4 +44,4 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return f"<User {self.email}"
+        return f"Пользователь {self.email}"
