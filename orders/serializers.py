@@ -19,3 +19,11 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'status', 'created_at', 'updated_at']
+
+class OrderStatusUpdateSerializer(serializers.ModelSerializer):
+
+    status = serializers.CharField(default='ADDED')
+
+    class Meta:
+        model = Order
+        fields = ['status']
