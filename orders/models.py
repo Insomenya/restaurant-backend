@@ -10,7 +10,8 @@ class Order(models.Model):
 
     STATUS = (
         ('ADDED', 'Создан'),
-        ('COMPLETED', 'Завершен')
+        ('COMPLETED', 'Завершен'),
+        ('CANCELLED', 'Отменён')
     )
 
     customer = models.ForeignKey(User, on_delete=models.CASCADE)

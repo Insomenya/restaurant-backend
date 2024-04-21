@@ -3,11 +3,11 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from . import serializers
 from .models import Order
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
-    
+# Добавление нового заказа, просмотр сводки заказов пользователя
 class OrderCreateListView(generics.GenericAPIView):
 
     serializer_class = serializers.OrderCreationSerializer
@@ -15,9 +15,10 @@ class OrderCreateListView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        user = request.user
 
-        orders = Order.objects.all()
-        
+        orders = Order.objects.all().filter(customer=user)
+
         serializer = self.serializer_class(instance=orders, many=True)
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
@@ -36,9 +37,10 @@ class OrderCreateListView(generics.GenericAPIView):
         
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class OrderDetailView(generics.GenericAPIView):
+# Изменение заказов администраторами
+class AdminSpecificOrderView(generics.GenericAPIView):
     serializer_class = serializers.OrderDetailSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request, order_id):
         order = get_object_or_404(Order, pk=order_id)
@@ -67,12 +69,13 @@ class OrderDetailView(generics.GenericAPIView):
         order.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+# Изменение статуса заказа администратором
 class UpdateOrderStatusView(generics.GenericAPIView):
 
     serializer_class = serializers.OrderStatusUpdateSerializer
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     
     def put(self, request, order_id):
         order = get_object_or_404(Order, pk=order_id)
@@ -87,20 +90,32 @@ class UpdateOrderStatusView(generics.GenericAPIView):
         
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class UserOrdersView(generics.GenericAPIView):
-    serializer_class = serializers.OrderDetailSerializer
-    permission_classes = [IsAuthenticated]
+# Отмена заказа пользователем
+class CancellOrderView(generics.GenericAPIView):
 
-    def get(self, request):
+    serializer_class = serializers.OrderStatusUpdateSerializer
+
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, order_id):
         user = request.user
 
-        orders = Order.objects.all().filter(customer=user)
+        order = Order.objects.all().filter(customer=user).get(pk=order_id)
 
-        serializer = self.serializer_class(instance=orders, many=True)
+        data = {
+            'status': 'CANCELLED'
+        }
 
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-    
-class UserSpecificOrder(generics.GenericAPIView):
+        serializer = self.serializer_class(data=data, instance=order)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Просмотр информации о заказе для пользователя (со списком блюд)
+class UserSpecificOrderView(generics.GenericAPIView):
     serializer_class = serializers.OrderDetailSerializer
     permission_classes = [IsAuthenticated]
 
