@@ -6,10 +6,10 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
-# Добавление нового заказа, просмотр сводки заказов пользователя
-class OrderCreateListView(generics.GenericAPIView):
+# Просмотр сводки заказов пользователя
+class OrderListView(generics.GenericAPIView):
 
-    serializer_class = serializers.OrderCreationSerializer
+    serializer_class = serializers.OrderSimpleListSerializer
     queryset = Order.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -22,23 +22,23 @@ class OrderCreateListView(generics.GenericAPIView):
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        data = request.data
+    # def post(self, request):
+    #     data = request.data
 
-        serializer = self.serializer_class(data=data)
+    #     serializer = self.serializer_class(data=data)
 
-        user = request.user
+    #     user = request.user
 
-        if serializer.is_valid():
-            serializer.save(customer=user)
+    #     if serializer.is_valid():
+    #         serializer.save(customer=user)
 
-            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+    #         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         
-        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Изменение заказов администраторами
 class AdminSpecificOrderView(generics.GenericAPIView):
-    serializer_class = serializers.OrderDetailSerializer
+    serializer_class = serializers.OrderSimpleListSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request, order_id):
@@ -115,7 +115,7 @@ class CancellOrderView(generics.GenericAPIView):
 
 # Просмотр информации о заказе для пользователя (со списком блюд)
 class UserSpecificOrderView(generics.GenericAPIView):
-    serializer_class = serializers.OrderDetailSerializer
+    serializer_class = serializers.OrderSimpleListSerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request, order_id):
