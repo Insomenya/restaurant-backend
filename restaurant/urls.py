@@ -24,6 +24,7 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('orders/', include('orders.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    path('menu/', include('menu.urls')),
 ]
 
 urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))

@@ -135,7 +135,6 @@ DATE_INPUT_FORMATS = ['%d-%m-%Y']
 
 USE_L10N = True
 USE_i18N = True
-
 USE_TZ = True
 
 
