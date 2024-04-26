@@ -137,6 +137,8 @@ USE_L10N = True
 USE_i18N = True
 USE_TZ = True
 
+POPULAR_LIMIT = 3
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

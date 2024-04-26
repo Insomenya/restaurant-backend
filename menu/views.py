@@ -1,8 +1,9 @@
-from .models import Meal
+from .models import Meal, Category
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from . import serializers
+from django.conf import settings
 
 # Create your views here.
 
@@ -17,6 +18,18 @@ class MealsListView(generics.GenericAPIView):
 
         serializer = self.serializer_class(instance=meals, many=True)
 
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+class PopularMealsView(generics.GenericAPIView):
+    serializer_class = serializers.MealsListSerializer
+
+    def get(self, request):
+        limit = settings.POPULAR_LIMIT
+
+        popular = Meal.objects.all().order_by('-times_ordered')[:limit]
+        
+        serializer = self.serializer_class(instance=popular, many=True)
+        
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     
 class SpecificMealView(generics.GenericAPIView):
