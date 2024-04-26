@@ -9,12 +9,13 @@ from django.utils.crypto import get_random_string
 def image_dir_path(instance, filename):
     extension = filename.split('.')[-1]
     unique_id = get_random_string(length=8)
-    new_filename = "uploads/meal_%s_%s.%s" % (instance_id, unique_id, extension)
+    new_filename = "uploads/meal_%s.%s" % (unique_id, extension)
 
     return new_filename
 
 class Category(models.Model):
     name = models.CharField("Название", max_length=40, blank=False, null=False)
+    created_at = models.DateTimeField("Дата добавления", auto_now_add=True)
 
     def __str__(self):
         return f"Категория \"{self.name}\""
