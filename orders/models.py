@@ -37,9 +37,12 @@ class Order(models.Model):
         verbose_name_plural = _('заказы')
 
 class Order_meal(models.Model):
-    order_id = models.ForeignKey(Order, on_delete=models.CASCADE)
-    meal_id = models.ForeignKey(Meal, verbose_name='Блюдо', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    meal = models.ForeignKey(Meal, verbose_name='Блюдо', on_delete=models.CASCADE)
     quantity = models.IntegerField("Количество", default=1, blank=True, null=False)
+
+    def __str__(self):
+        return self.meal.category.name
     
     class Meta:
-        unique_together = ('order_id', 'meal_id')
+        unique_together = ('order', 'meal')

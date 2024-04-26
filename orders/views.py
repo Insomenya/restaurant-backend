@@ -1,11 +1,12 @@
+import collections.abc
 from rest_framework import generics, status
 from rest_framework.response import Response
 from . import serializers
-from .models import Order
+from .models import Order, Order_meal
+from menu.models import Meal
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.shortcuts import get_object_or_404
 
-# Create your views here.
 # Просмотр сводки заказов пользователя
 class OrderListView(generics.GenericAPIView):
 
@@ -22,19 +23,48 @@ class OrderListView(generics.GenericAPIView):
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-    # def post(self, request):
-    #     data = request.data
+# Создание заказа пользователем
+class OrderCreationView(generics.GenericAPIView):
+    serializer_class = serializers.OrderCreationSerializer
+    permission_classes = [IsAuthenticated]
 
-    #     serializer = self.serializer_class(data=data)
+    def post(self, request):
+        data = request.data
+        serializer = self.serializer_class(data=data)
+        user = request.user
 
-    #     user = request.user
+        if serializer.is_valid():
+            if isinstance(serializer.data['ordered_meals'], collections.abc.Sequence):
+                def getMealId(meal):
+                    return meal['meal_id']
+                
+                def getQuantity(meal):
+                    return meal['quantity']
 
-    #     if serializer.is_valid():
-    #         serializer.save(customer=user)
+                validated_data = serializer.data
+                new_order = Order.objects.create(customer=user, status=validated_data['status'])
+                new_order.save()
 
-    #         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+                order_ids = [new_order.id] * len(validated_data['ordered_meals'])
+                meal_ids = map(getMealId, validated_data['ordered_meals'])
+                quantities = map(getQuantity, validated_data['ordered_meals'])
+
+                connections_data = zip(
+                    meal_ids,
+                    quantities
+                )
+
+                for conn in connections_data:
+                    existing_meal = Meal.objects.filter(id=conn[0])
+
+                    if existing_meal.exists():
+                        new_connection = Order_meal.objects.create(order=new_order, meal=existing_meal.first(), quantity=conn[1])
+
+                        new_connection.save()
+
+                return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         
-    #     return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Изменение заказов администраторами
 class AdminSpecificOrderView(generics.GenericAPIView):

@@ -1,41 +1,14 @@
-from .models import Order, Order_meal
-from menu.models import Meal
+from .models import Order
 from rest_framework import serializers
 
-class OrderCreationSerializer(serializers.ModelSerializer):
-    status = serializers.HiddenField(default='ADDED')
+class OrderMealSerializer(serializers.Serializer):
+    meal_id = serializers.IntegerField()
+    quantity = serializers.IntegerField()
 
-    class Meta:
-        model = Order
-        fields = ['status']
+class OrderCreationSerializer(serializers.Serializer):
+    status = serializers.CharField(default='ADDED')
+    ordered_meals = serializers.ListField(child=OrderMealSerializer(), min_length=1)
 
-    def create(self, validated_data) -> Order:
-        new_order = Order.objects.create(
-            status=validated_data['status']
-        )
-
-        new_order.save()
-
-        return new_order
-
-class OrderMealConnectionSerializer(serializers.ModelSerializer):
-    quantity = serializers.IntegerField(default=1)
-
-    class Meta:
-        model = Order_meal
-        fields = ['order_id', 'meal_id', 'quantity']
-
-    def create(self, validated_data) -> Order_meal:
-
-        connection = Order_meal.objects.create(
-            order_id=validated_data['order_id'],
-            meals=validated_data['meal_id'],
-            quantity=validated_data['quantity']
-        )
-
-        connection.save()
-
-        return connection
     
 class OrderSimpleListSerializer(serializers.ModelSerializer):
     class Meta:
