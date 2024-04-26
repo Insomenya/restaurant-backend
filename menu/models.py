@@ -2,8 +2,16 @@ from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils.translation import gettext_lazy as _
+from django.utils.crypto import get_random_string
 
 # Create your models here.
+
+def image_dir_path(instance, filename):
+    extension = filename.split('.')[-1]
+    unique_id = get_random_string(length=8)
+    new_filename = "uploads/meal_%s_%s.%s" % (instance_id, unique_id, extension)
+
+    return new_filename
 
 class Category(models.Model):
     name = models.CharField("Название", max_length=40, blank=False, null=False)
@@ -22,7 +30,7 @@ class Meal(models.Model):
     description = models.TextField("Описание", max_length=1000, blank=True, null=True)
     category = models.ForeignKey(Category, verbose_name="Категория", on_delete=models.CASCADE)
     added_at = models.DateTimeField("Дата добавления", auto_now_add=True)
-    image = models.ImageField("Картинка", upload_to='uploads', null=True, blank=True)
+    image = models.ImageField("Картинка", upload_to=image_dir_path, null=True, blank=True)
     image_large = ImageSpecField(source='image', processors=[ResizeToFill(512, 512)], format='PNG', options={'quality': 70})
     image_medium  = ImageSpecField(source='image', processors=[ResizeToFill(256, 256)], format='PNG', options={'quality': 70})
     image_small = ImageSpecField(source='image', processors=[ResizeToFill(128, 128)], format='PNG', options={'quality': 70})
