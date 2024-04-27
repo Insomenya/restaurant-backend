@@ -6,14 +6,15 @@ from .models import Order, Order_meal
 from menu.models import Meal
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 
-# Просмотр сводки заказов пользователя
 class OrderListView(generics.GenericAPIView):
 
     serializer_class = serializers.OrderSimpleListSerializer
     queryset = Order.objects.all()
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(operation_summary='Просмотр списка заказов для авторизованных пользователей')
     def get(self, request):
         user = request.user
 
@@ -23,11 +24,11 @@ class OrderListView(generics.GenericAPIView):
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
-# Создание заказа пользователем
 class OrderCreationView(generics.GenericAPIView):
     serializer_class = serializers.OrderCreationSerializer
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(operation_summary='Создание заказа авторизованным пользователем')
     def post(self, request):
         data = request.data
         serializer = self.serializer_class(data=data)
@@ -66,11 +67,11 @@ class OrderCreationView(generics.GenericAPIView):
         
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Изменение заказов администраторами
 class AdminSpecificOrderView(generics.GenericAPIView):
     serializer_class = serializers.OrderSimpleListSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
+    @swagger_auto_schema(operation_summary='Просмотр сведений о конкретном заказе администратором')
     def get(self, request, order_id):
         order = get_object_or_404(Order, pk=order_id)
 
@@ -78,6 +79,7 @@ class AdminSpecificOrderView(generics.GenericAPIView):
 
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
+    @swagger_auto_schema(operation_summary='Изменение заказа администратором')
     def put(self, request, order_id):
         data = request.data
 
@@ -92,6 +94,7 @@ class AdminSpecificOrderView(generics.GenericAPIView):
         
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(operation_summary='Удаление заказа администратором')
     def delete(self, request, order_id):
         order = get_object_or_404(Order, pk=order_id)
 
@@ -99,13 +102,13 @@ class AdminSpecificOrderView(generics.GenericAPIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# Изменение статуса заказа администратором
 class UpdateOrderStatusView(generics.GenericAPIView):
 
     serializer_class = serializers.OrderStatusUpdateSerializer
 
     permission_classes = [IsAuthenticated, IsAdminUser]
     
+    @swagger_auto_schema(operation_summary='Обновление статуса заказа администратором')
     def put(self, request, order_id):
         order = get_object_or_404(Order, pk=order_id)
 
@@ -119,17 +122,20 @@ class UpdateOrderStatusView(generics.GenericAPIView):
         
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-# Отмена заказа пользователем
 class CancellOrderView(generics.GenericAPIView):
 
     serializer_class = serializers.OrderStatusUpdateSerializer
 
     permission_classes = [IsAuthenticated]
     
+    @swagger_auto_schema(operation_summary='Отмена заказа авторизованным пользователем')
     def put(self, request, order_id):
         user = request.user
 
-        order = Order.objects.all().filter(customer=user).get(pk=order_id)
+        try:
+            order = Order.objects.all().filter(customer=user).get(pk=order_id)
+        except Order.DoesNotExist:
+            return Response(data={"detail": "No Order matches the given query."}, status=status.HTTP_404_NOT_FOUND)
 
         data = {
             'status': 'CANCELLED'
@@ -143,11 +149,11 @@ class CancellOrderView(generics.GenericAPIView):
         
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Просмотр информации о заказе для пользователя (со списком блюд)
 class UserSpecificOrderView(generics.GenericAPIView):
     serializer_class = serializers.OrderSimpleListSerializer
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(operation_summary='Просмотр конкретного заказа для авторизованного пользователя')
     def get(self, request, order_id):
         user = request.user
 

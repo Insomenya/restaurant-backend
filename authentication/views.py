@@ -2,17 +2,19 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from .models import User
 from . import serializers
+from drf_yasg.utils import swagger_auto_schema
 
-# Create your views here.
 class AuthView(generics.GenericAPIView):
     
+    @swagger_auto_schema(operation_summary='Поазывает, что есть способ авторизации')
     def get(self, request):
-        return Response(data={"message": "Hello Auth"}, status=status.HTTP_200_OK)
+        return Response(data={"message": "Авторизация с помощью JWT по email и паролю (/auth/jwt/create/)."}, status=status.HTTP_200_OK)
     
 class UserCreateView(generics.GenericAPIView):
 
     serializer_class = serializers.UserCreationSerializer
 
+    @swagger_auto_schema(operation_summary='Создать пользователя')
     def post(self, request):
         data = request.data
 
