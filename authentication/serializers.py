@@ -42,3 +42,12 @@ class UserCreationSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+    
+class UserDetailsSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(max_length=25)
+    email = serializers.CharField(max_length=80)
+    phone_number = PhoneNumberField(allow_null=False, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'phone_number']
