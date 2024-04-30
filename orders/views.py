@@ -56,12 +56,16 @@ class OrderCreationView(generics.GenericAPIView):
                 )
 
                 for conn in connections_data:
-                    existing_meal = Meal.objects.filter(id=conn[0])
+                    existing_meal = Meal.objects.filter(id=conn[0]).first()
 
                     if existing_meal.exists():
-                        new_connection = Order_meal.objects.create(order=new_order, meal=existing_meal.first(), quantity=conn[1])
+                        new_connection = Order_meal.objects.create(order=new_order, meal=existing_meal, quantity=conn[1])
 
                         new_connection.save()
+
+                        existing_meal.times_ordered = existing_meal.times_ordered + 1
+
+                        existing_meal.save()
 
                 return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         
