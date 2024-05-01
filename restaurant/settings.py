@@ -152,7 +152,7 @@ USE_L10N = True
 USE_i18N = True
 USE_TZ = True
 
-POPULAR_LIMIT = 3
+POPULAR_LIMIT = 8
 
 
 # Static files (CSS, JavaScript, Images)
