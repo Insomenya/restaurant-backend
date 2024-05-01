@@ -4,12 +4,6 @@ from rest_framework.permissions import IsAuthenticated
 from .models import User
 from . import serializers
 from drf_yasg.utils import swagger_auto_schema
-
-class AuthView(generics.GenericAPIView):
-    
-    @swagger_auto_schema(operation_summary='Поазывает, что есть способ авторизации')
-    def get(self, request):
-        return Response(data={"message": "Авторизация с помощью JWT по email и паролю (/auth/jwt/create/)."}, status=status.HTTP_200_OK)
     
 class UserCreateView(generics.GenericAPIView):
 
