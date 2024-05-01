@@ -58,7 +58,7 @@ class OrderCreationView(generics.GenericAPIView):
                 for conn in connections_data:
                     existing_meal = Meal.objects.filter(id=conn[0]).first()
 
-                    if existing_meal.exists():
+                    if existing_meal:
                         new_connection = Order_meal.objects.create(order=new_order, meal=existing_meal, quantity=conn[1])
 
                         new_connection.save()
