@@ -18,12 +18,12 @@ class UserCreationSerializer(serializers.ModelSerializer):
         if username_exists:
             raise serializers.ValidationError(detail="Пользователь с таким именем уже существует")
         
-        email_exists = User.objects.filter(username=attrs['email']).exists()
+        email_exists = User.objects.filter(email=attrs['email']).exists()
 
         if email_exists:
             raise serializers.ValidationError(detail="Пользователь с такой почтой уже существует")
         
-        phonenumber_exists = User.objects.filter(username=attrs['phone_number']).exists()
+        phonenumber_exists = User.objects.filter(phone_number=attrs['phone_number']).exists()
 
         if phonenumber_exists:
             raise serializers.ValidationError(detail="Пользователь с таким телефоном уже существует")
