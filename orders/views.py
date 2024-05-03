@@ -18,7 +18,7 @@ class OrderListView(generics.GenericAPIView):
     def get(self, request):
         user = request.user
 
-        orders = Order.objects.all().filter(customer=user)
+        orders = Order.objects.all().filter(customer=user).order_by('-created_at')
 
         serializer = self.serializer_class(instance=orders, many=True)
 
