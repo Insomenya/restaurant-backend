@@ -32,8 +32,8 @@ class Meal(models.Model):
     category = models.ForeignKey(Category, verbose_name="Категория", on_delete=models.CASCADE)
     added_at = models.DateTimeField("Дата добавления", auto_now_add=True)
     image = models.ImageField("Картинка", upload_to=image_dir_path, null=True, blank=True)
-    image_large = ImageSpecField(source='image', processors=[ResizeToFill(512, 512)], format='PNG', options={'quality': 70})
-    image_medium  = ImageSpecField(source='image', processors=[ResizeToFill(256, 256)], format='PNG', options={'quality': 70})
+    image_large = ImageSpecField(source='image', processors=[ResizeToFill(300, 300)], format='PNG', options={'quality': 70})
+    image_medium  = ImageSpecField(source='image', processors=[ResizeToFill(220, 220)], format='PNG', options={'quality': 70})
     image_small = ImageSpecField(source='image', processors=[ResizeToFill(128, 128)], format='PNG', options={'quality': 70})
     image_tag = ImageSpecField(source='image', processors=[ResizeToFill(28, 28)], format='PNG', options={'quality': 70})
 

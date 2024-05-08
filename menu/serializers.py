@@ -24,7 +24,8 @@ class SpecificMealSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name')
     added_at = serializers.DateTimeField()
     img = serializers.ReadOnlyField(source='image_large.url')
+    img_cart = serializers.ReadOnlyField(source='image_medium.url')
 
     class Meta:
         model = Meal
-        fields = ['id', 'name', 'price', 'description', 'category_name', 'added_at', 'img']
+        fields = ['id', 'name', 'price', 'description', 'category_name', 'added_at', 'img', 'img_cart']
