@@ -33,6 +33,8 @@ To run the server type:
 python manage.py runserver
 ```
 
+## Live version
+
 [Live version](https://insomenya.pythonanywhere.com/docs) is available at pythonanywhere.com.
 
 ## License
